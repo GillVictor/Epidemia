@@ -56,5 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $entityManager->flush();  // Exécuter la requête pour sauvegarder la zone
 
     // Message de succès
-    echo "Zone '" .$zone->getNom(). "' ajoutée avec succès au pays '" . $pays->getNom() . "' !";
+    //echo "Zone '" .$zone->getNom(). "' ajoutée avec succès au pays '" . $pays->getNom() . "' !";
+    header('Location: ../NiceAdmin/forms-zones.php?message=Zone ajoutée avec succès');
 }

@@ -8,7 +8,7 @@ The Doctrine Persistence project is a library that provides common abstractions 
 ## More resources:
 
 * [Website](https://www.doctrine-project.org/)
-* [Documentation](https://www.doctrine-project.org/projects/doctrine-persistence/en/latest/index.html)
+* [Documentation](https://www.doctrine-project.org/projects/doctrine-persistence/en/latest/index.php)
 * [Downloads](https://github.com/doctrine/persistence/releases)
 
   [Coverage 3.4 image]: https://codecov.io/gh/doctrine/persistence/branch/3.4.x/graph/badge.svg

@@ -1,7 +1,6 @@
 <?php
 
 use App\Pays;
-use App\Zone;
 
 require_once '../bootstrap.php';
 
@@ -84,7 +83,7 @@ $pays = $entityManager->getRepository(Pays::class)->findAll();
   <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href="index.php" class="logo d-flex align-items-center">
         <img src="assets/img/Hsante.jpg" alt=""> &nbsp;
         <span class="d-none d-lg-block">Epidemia &nbsp; <img src="assets/img/sante.jpg" alt=""> </span>
       </a>
@@ -133,7 +132,7 @@ $pays = $entityManager->getRepository(Pays::class)->findAll();
     <ul class="sidebar-nav" id="sidebar-nav">
 
       <li class="nav-item">
-        <a class="nav-link " href="index.html">
+        <a class="nav-link " href="index.php">
           <i class="bi bi-grid"></i>
           <span>Présentation</span>
         </a>
@@ -150,7 +149,7 @@ $pays = $entityManager->getRepository(Pays::class)->findAll();
             </a>
           </li>
           <li>
-            <a href="forms-pays.html">
+            <a href="forms-pays.php">
               <i class="bi bi-circle"></i><span>Ajouter des Pays</span>
             </a>
           </li>
@@ -182,12 +181,12 @@ $pays = $entityManager->getRepository(Pays::class)->findAll();
         <ul id="forms-nav-stats" class="nav-content collapse" data-bs-parent="#sidebar-nav">
           <li>
             <a href="elements-points.php">
-              <i class="bi bi-circle"></i><span>Liste Points 
+              <i class="bi bi-circle"></i><span>Liste Points
                 surveillance</span>
             </a>
           </li>
           <li>
-            <a href="gestion-pointSurveillance.php">
+            <a href="forms-points.php">
               <i class="bi bi-circle"></i><span>Gestion des
                 Points de Surveillance
               </span>
@@ -200,11 +199,20 @@ $pays = $entityManager->getRepository(Pays::class)->findAll();
 
   <main id="main" class="main">
 
+    <?php
+    // Vérifier si le 'message' est bien pris dans l'URL
+    if (isset($_GET['message'])) {
+      // Récupérer et afficher le message
+      $message = htmlspecialchars($_GET['message']);
+      echo "<div class='alert alert-success' role='alert'>$message</div>";
+    }
+    ?>
+
     <div class="pagetitle">
       <h1>Pays</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Accueil</a></li>
+          <li class="breadcrumb-item"><a href="index.php">Accueil</a></li>
           <li class="breadcrumb-item">Liste des Pays surveillés</li>
         </ol>
       </nav>
@@ -234,30 +242,29 @@ $pays = $entityManager->getRepository(Pays::class)->findAll();
                       <td><?php echo htmlspecialchars($paysItem->getNom()); ?></td>
                       <td>
                         <?php
-                        // Récupérer les zones associées et les afficher sous forme de liste séparée par des virgules
+                        // Récupérer les zones associées 
                         $zones = $paysItem->getZones();
                         $zoneNames = [];
                         foreach ($zones as $zone) {
-                          $zoneNames[] = $zone->getNom(); // On suppose qu'il y a une méthode getNom() pour les zones
+                          $zoneNames[] = $zone->getNom();
                         }
-                        echo implode(', ', $zoneNames); // Affiche les noms des zones séparés par une virgule
+                        echo implode(', ', $zoneNames); // afficher les noms des Zones associées en les séparant d'une virgule
                         ?>
                       </td>
                     </tr>
                   <?php endforeach; ?>
                 </tbody>
               </table>
-
             </div>
           </div>
         </div>
       </div>
     </section>
-    <!-- Formulaire d'ajout/édition d'un pays -->
+    
     <?php
     if (isset($_GET['id'])) {
       $paysId = $_GET['id'];
-      $pay = $entityManager->find(Pays::class, $paysId); // Trouver le pays existant pour modification
+      $pay = $entityManager->find(Pays::class, $paysId); // Trouver le pays existant pour la modification
     } else {
       $pay = new Pays(); // Créer un nouvel objet Pays si aucun ID n'est passé
     }
@@ -266,7 +273,9 @@ $pays = $entityManager->getRepository(Pays::class)->findAll();
     <div class="container mt-5">
       <div class="card shadow-sm">
         <div class="card-body">
-          <h5 class="card-title">Gestion des pays</h5>
+          <h5 class="card-title">
+            <center>Gestion d'un pays</center>
+          </h5>
 
           <form action="../test/suppression_pays.php" method="POST" id="paysForm">
             <!-- Sélection du pays -->
@@ -285,11 +294,12 @@ $pays = $entityManager->getRepository(Pays::class)->findAll();
               </select>
             </div>
 
-            <!-- Bouton de suppression -->
-            <div class="text-end">
+            <!-- Boutons -->
+            <div class="d-flex justify-content-between">
               <button type="submit" class="btn btn-danger fw-bold" id="deleteBtn" disabled>
                 Supprimer le pays
               </button>
+              <a href="#" id="editBtn" class="btn btn-warning fw-bold">Modifier</a>
             </div>
           </form>
         </div>
@@ -329,15 +339,33 @@ $pays = $entityManager->getRepository(Pays::class)->findAll();
   <script src="assets/js/main.js"></script>
 
   <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const selectPays = document.getElementById("pays");
-    const deleteBtn = document.getElementById("deleteBtn");
+    document.addEventListener("DOMContentLoaded", function() {
+      const selectPays = document.getElementById("pays");
+      const deleteBtn = document.getElementById("deleteBtn");
 
-    selectPays.addEventListener("change", function() {
+      selectPays.addEventListener("change", function() {
         deleteBtn.disabled = (selectPays.value === ""); // Active si une option est choisie
+      });
     });
-});
-</script>
+
+    document.addEventListener("DOMContentLoaded", function() {
+      let selectPays = document.getElementById("pays");
+      let deleteBtn = document.getElementById("deleteBtn");
+      let editBtn = document.getElementById("editBtn");
+
+      // Activer/désactiver les boutons selon la sélection
+      selectPays.addEventListener("change", function() {
+        let selectedId = selectPays.value;
+        if (selectedId) {
+          deleteBtn.removeAttribute("disabled");
+          editBtn.href = "../NiceAdmin/modif-pays.php?id=" + selectedId;
+        } else {
+          deleteBtn.setAttribute("disabled", "true");
+          editBtn.href = "#";
+        }
+      });
+    });
+  </script>
 
 
 </body>

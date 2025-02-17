@@ -8,10 +8,10 @@ require_once '../bootstrap.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $paysId = $_POST['id'];
     $nom = $_POST['nom'];
-    $zonesIds = $_POST['zones']; // Récupérer les IDs des zones sélectionnées
+    $zonesIds = $_POST['zones']; 
 
     if ($paysId) {
-        // Modifier un pays existant
+        // Si le pays existe déjà, on le modifie
         $pay = $entityManager->find(Pays::class, $paysId);
         $pay->setNom($nom);
     } else {
@@ -24,16 +24,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     foreach ($zonesIds as $zoneId) {
         $zone = $entityManager->find(Zone::class, $zoneId);
         if ($zone) {
-            $pay->addZone($zone); // Ajouter chaque zone avec la méthode addZone
+            $pay->addZone($zone); 
         }
     }
 
-    // Persist et flush de l'objet pays
     $entityManager->persist($pay);
     $entityManager->flush();
 
-    // Rediriger après l'enregistrement
-    header('Location: liste_pays.php');
+    header('Location: ../NiceAdmin/forms-pays.php?message=Pays ajouté avec succès');
     exit;
 }
 ?>

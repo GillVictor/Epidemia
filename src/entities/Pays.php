@@ -59,6 +59,10 @@ class Pays {
         }
         return $this;
     }
+    
+    public function clearZones(): void {
+        $this->zones->clear(); // Supprime toutes les zones associées
+    }
 }
 
 ?>

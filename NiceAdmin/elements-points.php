@@ -1,10 +1,16 @@
 <?php
 
-use App\Pays;
 use App\PointSurveillance;
 use App\Zone;
 
 require_once '../bootstrap.php';
+
+ if (isset($_GET['id'])) {
+  $pointId = $_GET['id'];
+  $pointSurveillance = $entityManager->find(PointSurveillance::class, $pointId); // Trouver le point existant
+} else {
+  $pointSurveillance = new PointSurveillance(); // Créer un nouvel objet si aucun ID n'est passé
+}
 
 $zones = $entityManager->getRepository(Zone::class)->findAll();
 $points = $entityManager->getRepository(PointSurveillance::class)->findAll();
@@ -86,7 +92,7 @@ $points = $entityManager->getRepository(PointSurveillance::class)->findAll();
   <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href="index.php" class="logo d-flex align-items-center">
         <img src="assets/img/Hsante.jpg" alt=""> &nbsp;
         <span class="d-none d-lg-block">Epidemia &nbsp; <img src="assets/img/sante.jpg" alt=""> </span>
       </a>
@@ -135,7 +141,7 @@ $points = $entityManager->getRepository(PointSurveillance::class)->findAll();
     <ul class="sidebar-nav" id="sidebar-nav">
 
       <li class="nav-item">
-        <a class="nav-link " href="index.html">
+        <a class="nav-link " href="index.php">
           <i class="bi bi-grid"></i>
           <span>Présentation</span>
         </a>
@@ -152,7 +158,7 @@ $points = $entityManager->getRepository(PointSurveillance::class)->findAll();
             </a>
           </li>
           <li>
-            <a href="forms-pays.html">
+            <a href="forms-pays.php">
               <i class="bi bi-circle"></i><span>Ajouter des Pays</span>
             </a>
           </li>
@@ -189,7 +195,7 @@ $points = $entityManager->getRepository(PointSurveillance::class)->findAll();
             </a>
           </li>
           <li>
-            <a href="gestion-pointSurveillance.php">
+            <a href="forms-points.php">
               <i class="bi bi-circle"></i><span>Gestion des
                 Points de Surveillance
               </span>
@@ -206,11 +212,20 @@ $points = $entityManager->getRepository(PointSurveillance::class)->findAll();
       <h1>Points de Surveillance</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Accueil</a></li>
+          <li class="breadcrumb-item"><a href="index.php">Accueil</a></li>
           <li class="breadcrumb-item">Liste</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
+    
+    <?php
+      // Vérifier si le 'message' est bien pris dans l'URL
+      if (isset($_GET['message'])) {
+        // Récupérer et afficher le message
+        $message = htmlspecialchars($_GET['message']);
+        echo "<div class='alert alert-success' role='alert'>$message</div>";
+      }
+      ?>
 
     <section class="section">
       <div class="row">
@@ -254,8 +269,9 @@ $points = $entityManager->getRepository(PointSurveillance::class)->findAll();
           </div>
         </div>
       </div>
+      
     </section>
-    <!-- Suppression des points de surveillance -->
+    
     <?php
     if (isset($_GET['id'])) {
       $pointId = $_GET['id'];
@@ -265,38 +281,41 @@ $points = $entityManager->getRepository(PointSurveillance::class)->findAll();
     }
     ?>
 
-    <div class="container mt-5">
-      <div class="card shadow-sm">
+<div class="container mt-5">
+    <div class="card shadow-sm">
         <div class="card-body">
-          <h5 class="card-title"><center>Suppression de Point de Surveillance</center></h5>
+            <h5 class="card-title">
+                <center>Suppression de Point de Surveillance</center>
+            </h5>
 
-          <form action="../test/suppression_point_surveillance.php" method="POST" id="pointForm">
-            <!-- Sélection du point de surveillance -->
-            <div class="mb-3">
-              <label for="point" class="form-label">Sélectionnez un point de surveillance</label>
-              <select name="id" id="point" class="form-select" required>
-                <option value="">-- Choisissez un point de surveillance --</option>
-                <?php
-                $pointsList = $entityManager->getRepository(PointSurveillance::class)->findAll();
-                foreach ($pointsList as $point) :
-                ?>
-                  <option value="<?= htmlspecialchars($point->getId()) ?>">
-                    <?= htmlspecialchars($point->getNom()) ?>
-                  </option>
-                <?php endforeach; ?>
-              </select>
-            </div>
+            <form action="../test/suppression_point_surveillance.php" method="POST" id="pointForm">
+                <!-- Sélection du point de surveillance -->
+                <div class="mb-3">
+                    <label for="point" class="form-label">Sélectionnez un point de surveillance</label>
+                    <select name="id" id="point" class="form-select" required>
+                        <option value="">-- Choisissez un point de surveillance --</option>
+                        <?php
+                        $pointsList = $entityManager->getRepository(PointSurveillance::class)->findAll();
+                        foreach ($pointsList as $point) :
+                        ?>
+                            <option value="<?= htmlspecialchars($point->getId()) ?>">
+                                <?= htmlspecialchars($point->getNom()) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
 
-            <!-- Bouton de suppression -->
-            <div class="text-end">
-              <button type="submit" class="btn btn-danger fw-bold" id="deleteBtn" disabled>
-                Supprimer le point de surveillance
-              </button>
-            </div>
-          </form>
+                <!-- Bouton de suppression -->
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-danger fw-bold" id="deleteBtn" disabled>
+                        Supprimer le point de surveillance
+                    </button>
+                    <a href="#" id="editBtn" class="btn btn-warning fw-bold">Modifier</a>
+                </div>
+            </form>
         </div>
-      </div>
     </div>
+</div>
 
     <script>
       document.getElementById("point").addEventListener("change", function() {
@@ -339,11 +358,28 @@ $points = $entityManager->getRepository(PointSurveillance::class)->findAll();
 
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      const selectPays = document.getElementById("pays");
+      const selectPoint = document.getElementById("point");
       const deleteBtn = document.getElementById("deleteBtn");
 
-      selectPays.addEventListener("change", function() {
-        deleteBtn.disabled = (selectPays.value === ""); // Active si une option est choisie
+      selectPoint.addEventListener("change", function() {
+        deleteBtn.disabled = (selectPoint.value === ""); // Active si une option est choisie
+      });
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+      let selectPoints = document.getElementById("point");
+      let deleteBtn = document.getElementById("deleteBtn");
+      let editBtn = document.getElementById("editBtn");
+
+      // Activer/désactiver les boutons selon la sélection
+      selectPoints.addEventListener("change", function() {
+        let selectedId = selectPoints.value;
+        if (selectedId) {
+          deleteBtn.removeAttribute("disabled");
+          editBtn.href = "../NiceAdmin/modif-points.php?id=" + selectedId;
+        } else {
+          deleteBtn.setAttribute("disabled", "true");
+          editBtn.href = "#";
+        }
       });
     });
   </script>

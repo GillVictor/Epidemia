@@ -97,7 +97,7 @@ $zonesRouges = array_filter($zones, function ($zone) {
   <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href="index.php" class="logo d-flex align-items-center">
         <img src="assets/img/Hsante.jpg" alt=""> &nbsp;
         <span class="d-none d-lg-block">Epidemia &nbsp; <img src="assets/img/sante.jpg" alt=""> </span>
       </a>
@@ -145,7 +145,7 @@ $zonesRouges = array_filter($zones, function ($zone) {
     <ul class="sidebar-nav" id="sidebar-nav">
 
       <li class="nav-item">
-        <a class="nav-link " href="index.html">
+        <a class="nav-link " href="index.php">
           <i class="bi bi-grid"></i>
           <span>Présentation</span>
         </a>
@@ -153,7 +153,7 @@ $zonesRouges = array_filter($zones, function ($zone) {
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#forms-nav-pays" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-globe"></i><span>Zones Surveillées</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="bi bi-globe"></i><span>Pays Surveillées</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="forms-nav-pays" class="nav-content collapse" data-bs-parent="#sidebar-nav">
           <li>
@@ -162,7 +162,7 @@ $zonesRouges = array_filter($zones, function ($zone) {
             </a>
           </li>
           <li>
-            <a href="forms-pays.html">
+            <a href="forms-pays.php">
               <i class="bi bi-circle"></i><span>Ajouter des Pays</span>
             </a>
           </li>
@@ -199,7 +199,7 @@ $zonesRouges = array_filter($zones, function ($zone) {
             </a>
           </li>
           <li>
-            <a href="gestion-pointSurveillance.php">
+            <a href="forms-points.php">
               <i class="bi bi-circle"></i><span>Gestion des
                 Points de Surveillance
               </span>
@@ -215,17 +215,29 @@ $zonesRouges = array_filter($zones, function ($zone) {
       <h1>Pays</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Accueil</a></li>
+          <li class="breadcrumb-item"><a href="index.php">Accueil</a></li>
           <li class="breadcrumb-item">Liste des Zones Surveillées</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
+
+    <?php
+    // Vérifier si le 'message' est bien pris dans l'URL
+    if (isset($_GET['message'])) {
+      // Récupérer et afficher le message
+      $message = htmlspecialchars($_GET['message']);
+      echo "<div class='alert alert-success' role='alert'>$message</div>";
+    }
+    ?>
+
     <section class="section">
       <div class="row">
         <div class="col-lg-12">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title"><center>Liste des Zones</center></h5>
+              <h5 class="card-title">
+                <center>Liste des Zones</center>
+              </h5>
 
               <table class="table datatable">
                 <thead>
@@ -265,12 +277,14 @@ $zonesRouges = array_filter($zones, function ($zone) {
         </div>
       </div>
     </section>
-    <section class="section" >
+    <section class="section">
       <div class="row">
         <div class="col-lg-12">
           <div class="card">
             <div class="card-body bg-danger text-white ">
-              <h5 class="card-title" id="critique"><center>Zones Critiques</center> </h5>
+              <h5 class="card-title" id="critique">
+                <center>Zones Critiques</center>
+              </h5>
 
               <table class="table datatable">
                 <thead>
@@ -315,7 +329,7 @@ $zonesRouges = array_filter($zones, function ($zone) {
       <div class="card shadow-sm">
         <div class="card-body">
           <h5 class="card-title">
-            <center>Suppression de Zone</center>
+            <center>Gestion d'une Zone</center>
           </h5>
 
           <form action="../test/suppression_zone.php" method="POST" id="zoneForm">
@@ -335,11 +349,11 @@ $zonesRouges = array_filter($zones, function ($zone) {
               </select>
             </div>
 
-            <!-- Bouton de suppression -->
-            <div class="text-end">
+            <div class="d-flex justify-content-between">
               <button type="submit" class="btn btn-danger fw-bold" id="deleteBtn" disabled>
-                Supprimer la zone
+                Supprimer la Zone
               </button>
+              <a href="#" id="editBtn" class="btn btn-warning fw-bold">Modifier</a>
             </div>
           </form>
         </div>
@@ -382,7 +396,25 @@ $zonesRouges = array_filter($zones, function ($zone) {
     document.getElementById("zone").addEventListener("change", function() {
       document.getElementById("deleteBtn").disabled = !this.value;
     });
+    document.addEventListener("DOMContentLoaded", function () {
+    let selectZones = document.getElementById("zone");
+    let deleteBtn = document.getElementById("deleteBtn");
+    let editBtn = document.getElementById("editBtn");
+
+    // Activer/désactiver les boutons selon la sélection
+    selectZones.addEventListener("change", function () {
+      let selectedId = selectZones.value;
+      if (selectedId) {
+        deleteBtn.removeAttribute("disabled");
+        editBtn.href = "../NiceAdmin/modif-zones.php?id=" + selectedId;
+      } else {
+        deleteBtn.setAttribute("disabled", "true");
+        editBtn.href = "#";
+      }
+    });
+  });
   </script>
+  
 </body>
 
 </html>

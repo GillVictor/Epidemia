@@ -1,7 +1,18 @@
 <?php
 use App\Pays;
+use App\Zone; // Assure-toi que Zone est bien une entité
 
 require_once '../bootstrap.php';
+
+// Récupérer l'ID de la zone si elle est passée via l'URL
+$zoneId = isset($_GET['id']) ? $_GET['id'] : null;
+$zone = null;
+
+if ($zoneId) {
+    // Récupérer la zone correspondante à l'ID
+    $zone = $entityManager->find(Zone::class, $zoneId);
+}
+
 $paysList = $entityManager->getRepository(Pays::class)->findAll();
 ?>
 
@@ -77,7 +88,7 @@ $paysList = $entityManager->getRepository(Pays::class)->findAll();
   <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href="index.php" class="logo d-flex align-items-center">
         <img src="assets/img/Hsante.jpg" alt=""> &nbsp;
         <span class="d-none d-lg-block">Epidemia &nbsp; <img src="assets/img/sante.jpg" alt=""> </span>
       </a>
@@ -126,7 +137,7 @@ $paysList = $entityManager->getRepository(Pays::class)->findAll();
     <ul class="sidebar-nav" id="sidebar-nav">
 
       <li class="nav-item">
-        <a class="nav-link " href="index.html">
+        <a class="nav-link " href="index.php">
           <i class="bi bi-grid"></i>
           <span>Présentation</span>
         </a>
@@ -143,7 +154,7 @@ $paysList = $entityManager->getRepository(Pays::class)->findAll();
             </a>
           </li>
           <li>
-            <a href="forms-pays.html">
+            <a href="forms-pays.php">
               <i class="bi bi-circle"></i><span>Ajouter des Pays</span>
             </a>
           </li>
@@ -180,7 +191,7 @@ $paysList = $entityManager->getRepository(Pays::class)->findAll();
             </a>
           </li>
           <li>
-            <a href="gestion-pointSurveillance.php">
+            <a href="forms-points.php">
               <i class="bi bi-circle"></i><span>Gestion des
                 Points de Surveillance
               </span>
@@ -197,12 +208,20 @@ $paysList = $entityManager->getRepository(Pays::class)->findAll();
       <h1>Zones Surveillés</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Accueil</a></li>
+          <li class="breadcrumb-item"><a href="index.php">Accueil</a></li>
           <li class="breadcrumb-item">Ajouter - Zones de surveillance</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
-    
+
+    <?php
+    // Vérifier si le 'message' est bien pris dans l'URL
+    if (isset($_GET['message'])) {
+      // Récupérer et afficher le message
+      $message = htmlspecialchars($_GET['message']);
+      echo "<div class='alert alert-success' role='alert'>$message</div>";
+    }
+    ?> 
     
 <section class="section">
   <div class="row justify-content-center">

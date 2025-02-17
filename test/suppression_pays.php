@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
         $entityManager->flush();
     }
 }
-session_start();
-$_SESSION['success'] = "Le pays a bien été supprimé.";
-header('Location: ../NiceAdmin/elements-pays.php'); 
+//session_start();
+//$_SESSION['success'] = "Le pays a bien été supprimé.";
+header('Location: ../NiceAdmin/elements-pays.php?message=Pays supprimé avec succès');
 exit;
